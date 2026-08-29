@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Grecia 2026 — Travel Match</title>
+<meta name="theme-color" content="#ffffff">
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#16181d;--muted:#6d7280;--line:#e7e9ef;--accent:#4f46e5;--accent2:#7c3aed;--shadow:0 18px 50px rgba(26,29,39,.10);--radius:24px}
+*{box-sizing:border-box}body{margin:0;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 15% 15%,rgba(79,70,229,.10),transparent 35%),radial-gradient(circle at 85% 20%,rgba(124,58,237,.09),transparent 32%),var(--bg);color:var(--text)}
+.wrap{max-width:760px;margin:auto;padding:20px 16px 48px}.top{display:flex;align-items:center;justify-content:space-between;margin:6px 0 18px}.brand{font-weight:800;letter-spacing:-.02em}.badge{font-size:12px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:8px 10px;border-radius:999px}
+.progress-shell{height:9px;background:#e9eaf1;border-radius:999px;overflow:hidden;margin-bottom:22px}.progress{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:.25s}
+.card{background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.65);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}
+.kicker{font-size:13px;color:var(--accent);font-weight:800;text-transform:uppercase;letter-spacing:.08em}h1{font-size:32px;line-height:1.08;margin:10px 0 12px;letter-spacing:-.035em}h2{font-size:25px;line-height:1.15;margin:8px 0 10px;letter-spacing:-.025em}p{color:var(--muted);line-height:1.5}
+.options{display:grid;gap:10px;margin-top:20px}.opt{border:1px solid var(--line);background:#fff;padding:15px 16px;border-radius:16px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:.15s;user-select:none}.opt:hover{transform:translateY(-1px);border-color:#c8c9f4}.opt.selected{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.10);background:#fbfbff}
+.dot{width:19px;height:19px;border:2px solid #b9bdc8;border-radius:50%;flex:0 0 19px;display:grid;place-items:center}.selected .dot{border-color:var(--accent)}.selected .dot:after{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent)}.check{border-radius:6px}.selected .check:after{content:"✓";width:auto;height:auto;background:none;color:var(--accent);font-weight:900}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:20px}.scale button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px 0;font-weight:800;cursor:pointer}.scale button.sel{background:var(--accent);color:white;border-color:var(--accent)}.scale-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:8px}
+.textarea{width:100%;min-height:130px;border:1px solid var(--line);border-radius:16px;padding:14px;font:inherit;resize:vertical;outline:none}.textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,70,229,.1)}
+.nav{display:flex;justify-content:space-between;gap:12px;margin-top:18px}button.primary,button.secondary{border:0;border-radius:15px;padding:14px 18px;font-weight:800;font-size:15px;cursor:pointer}button.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;flex:1}button.secondary{background:#fff;border:1px solid var(--line);color:var(--text)}button:disabled{opacity:.45;cursor:not-allowed}
+.hero{padding:34px 26px}.hero h1{font-size:40px}.pillrow{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.pill{font-size:13px;background:#f0efff;color:#4b43b5;border-radius:999px;padding:8px 11px}.small{font-size:13px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.result-box{background:#f8f8fc;border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:14px}.code{white-space:pre-wrap;background:#111318;color:#eef0f6;border-radius:16px;padding:14px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:280px;overflow:auto}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#16181d;color:white;padding:11px 14px;border-radius:999px;opacity:0;pointer-events:none;transition:.2s;font-size:13px}.toast.show{opacity:1}
+@media(max-width:600px){.wrap{padding:12px 12px 32px}.card{padding:20px;border-radius:20px}.hero{padding:26px 20px}h1,.hero h1{font-size:30px}h2{font-size:22px}.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">Travel Match · Grecia</div><div class="badge" id="counter">Benvenuto</div></div>
+  <div class="progress-shell"><div class="progress" id="progress"></div></div>
+  <div id="app"></div>
+</div>
+<div class="toast" id="toast">Copiato</div>
+<script>
+const questions=[
+{id:"name",section:"Profilo",q:"Come ti chiami?",type:"text",placeholder:"Nome o soprannome"},
+{id:"duration",section:"Periodo",q:"Quanto dovrebbe durare il viaggio?",type:"single",options:["7 giorni","8 giorni","9 giorni","10 giorni","Più di 10 giorni","Sono flessibile"]},
+{id:"dateflex",section:"Periodo",q:"Quanto sei flessibile sulle date di settembre?",type:"single",options:["Per niente: ho date precise","± 1-2 giorni","± 3-4 giorni","Molto flessibile","Qualsiasi settimana di settembre"]},
+{id:"period",section:"Periodo",q:"Quale parte di settembre preferisci?",type:"single",options:["Inizio settembre","Prima metà","Metà settembre","Seconda metà","Fine settembre","Indifferente"]},
+{id:"budget",section:"Budget",q:"Quanto vorresti spendere a persona per tutto il viaggio?",note:"Voli, alloggi e spostamenti principali.",type:"single",options:["Fino a 800 €","800–1.000 €","1.000–1.200 €","1.200–1.500 €","1.500–2.000 €","Oltre 2.000 € se ne vale la pena","Preferisco non fissarlo ora"]},
+{id:"saving",section:"Budget",q:"Quanto conta risparmiare?",type:"scale",low:"Poco",high:"Moltissimo"},
+{id:"premium",section:"Budget",q:"Per una località davvero speciale spenderesti sensibilmente di più?",type:"single",options:["Sì","Probabilmente sì","Dipende da quanto è speciale","Preferirei di no","No"]},
+{id:"sea",section:"Stile di viaggio",q:"Quanto conta il mare e la qualità delle spiagge?",type:"scale",low:"Secondario",high:"Fondamentale"},
+{id:"landscape",section:"Stile di viaggio",q:"Quanto contano paesaggi, tramonti e posti panoramici?",type:"scale",low:"Poco",high:"Fondamentale"},
+{id:"food",section:"Stile di viaggio",q:"Quanto conta mangiare bene e provare cucina locale?",type:"scale",low:"Poco",high:"Fondamentale"},
+{id:"culture",section:"Stile di viaggio",q:"Quanto contano cultura, borghi e siti archeologici?",type:"scale",low:"Poco",high:"Fondamentale"},
+{id:"nightlife",section:"Stile di viaggio",q:"Quanto conta la vita serale?",type:"scale",low:"Poco",high:"Fondamentale"},
+{id:"relax",section:"Stile di viaggio",q:"Quanto conta il relax?",type:"scale",low:"Poco",high:"Fondamentale"},
+{id:"beachtype",section:"Mare",q:"Che tipo di mare/spiagge ti attirano di più?",type:"multi",options:["Sabbia chiara","Calette","Spiagge selvagge","Scogli e acqua trasparente","Beach club","Lunghe spiagge comode","Mi interessa soprattutto che il mare sia bellissimo"]},
+{id:"pace",section:"Ritmo",q:"Quale descrizione si avvicina di più alla tua vacanza ideale?",type:"single",options:["Hotel, mare, cena e relax","Relax con qualche escursione","50% relax / 50% esplorazione","Mi piace vedere molte cose","Voglio sfruttare ogni giornata"]},
+{id:"hotelchanges",section:"Ritmo",q:"Quante volte saresti disposto a cambiare hotel?",type:"single",options:["Mai","Una volta","Due volte","Anche più volte se migliora molto il viaggio"]},
+{id:"islands",section:"Spostamenti",q:"Quante isole preferiresti fare?",type:"single",options:["Una sola","Due","Tre","Più mete possibili","Nessuna preferenza"]},
+{id:"ferries",section:"Spostamenti",q:"Quanto ti pesano i traghetti durante la vacanza?",type:"scale",low:"Per nulla",high:"Molto"},
+{id:"mobility",section:"Spostamenti",q:"Cosa saresti disposto a noleggiare?",type:"multi",options:["Auto","Scooter","Quad","Tutti","Nessuno"]},
+{id:"hotel",section:"Alloggio",q:"Che tipo di sistemazione preferisci?",type:"multi",options:["Hotel semplice ma ottimo","Hotel 3 stelle","Hotel 4 stelle","Boutique hotel","Appartamento","Resort","Dipende dalla destinazione"]},
+{id:"hotelquality",section:"Alloggio",q:"Quanto conta avere una bella struttura?",type:"scale",low:"Poco",high:"Molto"},
+{id:"seaview",section:"Alloggio",q:"Quanto conta la vista mare / una bella vista?",type:"scale",low:"Poco",high:"Molto"},
+{id:"evening",section:"Serate",q:"La sera cosa ti piacerebbe fare?",type:"multi",options:["Cena tranquilla","Passeggiata","Cocktail bar","Locali con musica","Beach club","Discoteca","Serata romantica","Dipende dalla giornata"]},
+{id:"santorini",section:"Icone",q:"Quanto ti interessa vedere Santorini?",type:"single",options:["È praticamente obbligatoria","Mi interessa molto","Mi piacerebbe","Solo se si inserisce bene","Non mi interessa particolarmente"]},
+{id:"mykonos",section:"Icone",q:"Quanto ti interessa vedere Mykonos?",type:"single",options:["È praticamente obbligatoria","Mi interessa molto","Mi piacerebbe","Solo se si inserisce bene","Non mi interessa particolarmente"]},
+{id:"premiumChoice",section:"Icone",q:"Se Santorini o Mykonos aumentassero molto il costo totale, cosa preferiresti?",type:"single",options:["Tenerle comunque","Fare solo 1-2 notti","Sceglierne solamente una","Sostituirle con isole più convenienti","Decidere dopo aver visto i costi reali"]},
+{id:"top5",section:"Priorità",q:"Scegli fino a 5 cose davvero importanti.",type:"multi",max:5,options:["Mare spettacolare","Spiagge belle","Hotel bello","Buon cibo","Vita serale","Paesi caratteristici","Tramonti","Relax","Escursioni","Cultura","Pochi spostamenti","Prezzo conveniente","Destinazioni iconiche","Posti poco turistici","Esperienze romantiche","Divertimento"]},
+{id:"avoid",section:"Priorità",q:"Cosa vorresti evitare?",type:"multi",options:["Troppa confusione","Turismo di massa","Prezzi esagerati","Hotel scadenti","Troppi traghetti","Troppi cambi hotel","Lunghi spostamenti","Località morte la sera","Discoteche e caos","Spiagge troppo affollate","Mete troppo isolate","Vacanza troppo organizzata","Vacanza troppo sedentaria"]},
+{id:"perfect",section:"Finale",q:"Per tornare e dire «è stata una vacanza fantastica», quali 3 cose devono essere successe?",type:"textarea",placeholder:"Scrivi liberamente le tre cose più importanti…"},
+{id:"winner",section:"Finale",q:"Se dovessi scegliere una sola priorità, quale vincerebbe?",type:"single",options:["Mare più bello possibile","Vacanza più romantica","Più cose da vedere","Miglior rapporto qualità/prezzo","Più divertimento","Più relax","Posti iconici","Viaggio più semplice e comodo","Equilibrio tra tutto"]}
+];
+function loadState(){try{const raw=localStorage.getItem("greeceTravelState");return raw?JSON.parse(raw):{step:-1,answers:{}}}catch(e){return {step:-1,answers:{}}}}
+let state=loadState();
+const app=document.getElementById("app"),progress=document.getElementById("progress"),counter=document.getElementById("counter");
+function save(){try{localStorage.setItem("greeceTravelState",JSON.stringify(state))}catch(e){}}
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1300)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":["&gt;"][0],"\"":"&quot;","'":"&#39;"}[m]))}
+function render(){save();if(state.step<0)return welcome();if(state.step>=questions.length)return finish();const q=questions[state.step];progress.style.width=Math.round((state.step/questions.length)*100)+"%";counter.textContent=`${state.step+1} / ${questions.length}`;let body=`<div class="card"><div class="kicker">${esc(q.section)}</div><h2>${esc(q.q)}</h2>${q.note?`<p>${esc(q.note)}</p>`:""}`;const a=state.answers[q.id];
+if(q.type==="single")body+=`<div class="options">`+q.options.map(o=>`<div class="opt ${a===o?'selected':''}" onclick='chooseSingle(${JSON.stringify(q.id)},${JSON.stringify(o)})'><span class="dot"></span><span>${esc(o)}</span></div>`).join("")+`</div>`;
+else if(q.type==="multi"){const arr=Array.isArray(a)?a:[];body+=`<div class="options">`+q.options.map(o=>`<div class="opt ${arr.includes(o)?'selected':''}" onclick='toggleMulti(${JSON.stringify(q.id)},${JSON.stringify(o)},${q.max||0})'><span class="dot check"></span><span>${esc(o)}</span></div>`).join("")+`</div>`;if(q.max)body+=`<p class="small">Puoi selezionare fino a ${q.max} opzioni.</p>`}
+else if(q.type==="scale")body+=`<div class="scale">`+[1,2,3,4,5].map(n=>`<button class="${a===n?'sel':''}" onclick='setScale(${JSON.stringify(q.id)},${n})'>${n}</button>`).join("")+`</div><div class="scale-labels"><span>${esc(q.low)}</span><span>${esc(q.high)}</span></div>`;
+else if(q.type==="text")body+=`<input class="textarea" style="min-height:auto" value="${esc(a||"")}" placeholder="${esc(q.placeholder||"")}" oninput='setText(${JSON.stringify(q.id)},this.value)'>`;
+else body+=`<textarea class="textarea" placeholder="${esc(q.placeholder||"")}" oninput='setText(${JSON.stringify(q.id)},this.value)'>${esc(a||"")}</textarea>`;
+body+=`<div class="nav"><button class="secondary" onclick="prev()">Indietro</button><button class="primary" ${isValid(q)?'':'disabled'} onclick="next()">Continua</button></div></div>`;app.innerHTML=body}
+function welcome(){progress.style.width="0%";counter.textContent="Benvenuto";app.innerHTML=`<div class="card hero"><div class="kicker">Grecia · Settembre 2026</div><h1>Troviamo il viaggio che piace davvero a entrambi.</h1><p>Rispondi pensando alla tua vacanza ideale. Non cercare di indovinare cosa sceglierebbe l’altra persona.</p><div class="pillrow"><span class="pill">3–5 minuti</span><span class="pill">Mobile friendly</span><span class="pill">Salvataggio automatico</span></div><button class="primary" onclick="state.step=0;render()">Inizia il questionario</button><p class="small">Le risposte restano sul dispositivo finché non scegli di copiarle o scaricarle.</p></div>`}
+function isValid(q){const a=state.answers[q.id];if(q.type==="multi")return Array.isArray(a)&&a.length>0;return a!==undefined&&a!==null&&String(a).trim()!==""}
+function chooseSingle(id,val){state.answers[id]=val;render()}function toggleMulti(id,val,max){let arr=Array.isArray(state.answers[id])?[...state.answers[id]]:[];const i=arr.indexOf(val);if(i>=0)arr.splice(i,1);else{if(max&&arr.length>=max){toast(`Massimo ${max}`);return}arr.push(val)}state.answers[id]=arr;render()}
+function setScale(id,n){state.answers[id]=n;render()}function setText(id,v){state.answers[id]=v;save()}function next(){if(isValid(questions[state.step])){state.step++;render();window.scrollTo({top:0,behavior:"smooth"})}}function prev(){state.step=Math.max(-1,state.step-1);render();window.scrollTo({top:0,behavior:"smooth"})}
+function summaryText(){const name=state.answers.name||"Partecipante";let lines=[`RISPOSTE VIAGGIO GRECIA — ${name}`,`Generato: ${new Date().toLocaleString("it-IT")}`,""];questions.forEach(q=>{const a=state.answers[q.id];if(a!==undefined)lines.push(`${q.q}\n${Array.isArray(a)?a.join(", "):a}\n`)});return lines.join("\n")}
+function finish(){progress.style.width="100%";counter.textContent="Completato";app.innerHTML=`<div class="card"><div class="kicker">Completato</div><h1>Perfetto. Risposte pronte.</h1><p>Mandami questo risultato e lo useremo insieme alle altre risposte per calcolare le destinazioni migliori.</p><div class="grid2"><button class="primary" onclick="copySummary()">Copia le risposte</button><button class="secondary" onclick="downloadJSON()">Scarica JSON</button></div><div class="result-box"><strong>${esc(state.answers.name||"Partecipante")}</strong><p class="small">Il riepilogo completo è già pronto per essere condiviso.</p></div><details><summary>Mostra riepilogo tecnico</summary><div class="code">${esc(summaryText())}</div></details><div class="nav"><button class="secondary" onclick="state.step=questions.length-1;render()">Modifica ultima risposta</button><button class="secondary" onclick="resetAll()">Ricomincia</button></div></div>`}
+async function copySummary(){try{await navigator.clipboard.writeText(summaryText());toast("Risposte copiate")}catch(e){toast("Copia non disponibile")}}
+function downloadJSON(){const blob=new Blob([JSON.stringify({version:1,created:new Date().toISOString(),answers:state.answers},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`grecia-${(state.answers.name||"risposte").toLowerCase().replace(/\s+/g,"-")}.json`;a.click()}
+function resetAll(){if(confirm("Vuoi cancellare tutte le risposte?")){state={step:-1,answers:{}};try{localStorage.removeItem("greeceTravelState")}catch(e){};render()}}
+render();
+</script>
+</body>
+</html>
